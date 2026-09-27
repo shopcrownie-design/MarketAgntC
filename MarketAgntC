@@ -1,0 +1,66 @@
+import streamlit as st
+import requests
+
+st.set_page_config(page_title="XAUUSD & US30 Agent", layout="wide")
+
+st.title("Market Agent – XAUUSD & US30")
+st.write("Real-time reasons for price movement")
+
+# -------------------------
+# SAMPLE LIVE DATA (replace with API later)
+# -------------------------
+data = {
+    "xauusd": 2284.50,
+    "us30": 39210,
+    "usd": 104.7,
+    "yield_10y": 4.52,
+    "yield_30y": 4.78,
+    "oil": 82.3,
+    "tech_strength": True,
+    "geopolitical_risk": False,
+    "risk_sentiment": "risk-on"
+}
+
+# -------------------------
+# REASON ENGINE
+# -------------------------
+
+def gold_reason(d):
+    reasons = []
+    if d["usd"] > 103:
+        reasons.append("USD strong → bearish")
+    if d["yield_10y"] > 4.4:
+        reasons.append("Yields high → bearish")
+    if d["geopolitical_risk"]:
+        reasons.append("Geopolitical tension → bullish")
+    if d["risk_sentiment"] == "risk-off":
+        reasons.append("Risk-off → bullish")
+    return reasons
+
+def us30_reason(d):
+    reasons = []
+    if d["tech_strength"]:
+        reasons.append("Tech strength → bullish")
+    if d["yield_30y"] > 4.9:
+        reasons.append("High yields → bearish")
+    if d["oil"] < 85:
+        reasons.append("Oil falling → bullish")
+    if d["risk_sentiment"] == "risk-off":
+        reasons.append("Risk-off → bearish")
+    return reasons
+
+# -------------------------
+# UI
+# -------------------------
+
+st.subheader("XAUUSD (Gold)")
+st.metric("Price", f"{data['xauusd']} USD")
+st.write("### Reasons for movement:")
+for r in gold_reason(data):
+    st.write(f"- {r}")
+
+st.subheader("US30 (Dow Jones)")
+st.metric("Price", f"{data['us30']}")
+st.write("### Reasons for movement:")
+for r in us30_reason(data):
+    st.write(f"- {r}")
